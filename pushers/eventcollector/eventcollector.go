@@ -1,4 +1,4 @@
-// Copyright 2016-2019 DutchSec (https://dutchsec.com/)
+// Copyright 2019 Ubiwhere (https://www.ubiwhere.com/)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,16 +11,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package kafka
+
+package eventcollector
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	sarama "github.com/Shopify/sarama"
-	"net"
-	"sort"
-	"strings"
-	"time"
+	"github.com/honeytrap/honeytrap/pushers/eventcollector/events"
+	"io/ioutil"
 	"unicode"
 	"unicode/utf8"
 
@@ -31,13 +33,14 @@ import (
 )
 
 var (
-	_ = pushers.Register("kafka", New)
+	_ = pushers.Register("eventcollector", New)
+	eventAPIStarted bool = false
 )
 
-var log = logging.MustGetLogger("channels/kafka")
+var log = logging.MustGetLogger("channels/eventcollector")
 
 // Backend defines a struct which provides a channel for delivery
-// push messages to an elasticsearch api.
+// push messages to the EventCollector brokers (kafka).
 type Backend struct {
 	Config
 	producer sarama.AsyncProducer
@@ -45,6 +48,12 @@ type Backend struct {
 }
 
 func New(options ...func(pushers.Channel) error) (pushers.Channel, error) {
+
+	if !eventAPIStarted {
+		go events.StartAPI()
+		eventAPIStarted = true
+	}
+
 	ch := make(chan map[string]interface{}, 100)
 
 	c := Backend{
@@ -55,7 +64,25 @@ func New(options ...func(pushers.Channel) error) (pushers.Channel, error) {
 		optionFn(&c)
 	}
 
+
 	config := sarama.NewConfig()
+
+	if c.SecurityProtocol == "SSL" {
+
+		tlsConfig, err := NewTLSConfig(c.SSLCertFile, c.SSLKeyFile, c.SSLCAFile)
+		if err != nil {
+			log.Errorf("Unable to create TLS configuration: %v", err)
+			return nil, err
+		}
+
+		config.Net.TLS.Config = tlsConfig
+		config.Net.TLS.Enable = true
+
+		if len(c.SSLPassword) > 0 {
+			config.Net.SASL.Password = c.SSLPassword
+		}
+	}
+
 	config.Producer.Retry.Max = 5
 	config.Producer.RequiredAcks = sarama.NoResponse
 
@@ -70,6 +97,32 @@ func New(options ...func(pushers.Channel) error) (pushers.Channel, error) {
 	return &c, nil
 }
 
+
+
+func NewTLSConfig(clientCertFile, clientKeyFile, caCertFile string) (*tls.Config, error) {
+	tlsConfig := tls.Config{}
+
+	// Load client cert
+	cert, err := tls.LoadX509KeyPair(clientCertFile, clientKeyFile)
+	if err != nil {
+		return &tlsConfig, err
+	}
+	tlsConfig.Certificates = []tls.Certificate{cert}
+
+	// Load CA cert
+	caCert, err := ioutil.ReadFile(caCertFile)
+	if err != nil {
+		return &tlsConfig, err
+	}
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+	tlsConfig.RootCAs = caCertPool
+
+	tlsConfig.BuildNameToCertificate()
+	return &tlsConfig, err
+}
+
+
 func printify(s string) string {
 	o := ""
 	for _, rune := range s {
@@ -80,7 +133,6 @@ func printify(s string) string {
 			o += fmt.Sprintf("\\x%s", hex.EncodeToString(buf[:n]))
 			continue
 		}
-
 		o += string(rune)
 	}
 	return o
@@ -90,29 +142,25 @@ func (hc Backend) run() {
 	defer hc.producer.AsyncClose()
 
 	for e := range hc.ch {
-		var params []string
 
-		for k, v := range e {
-
-			switch x := v.(type) {
-			case net.IP:
-				params = append(params, fmt.Sprintf("%s=%s", k, x.String()))
-			case uint32, uint16, uint8, uint,
-				int32, int16, int8, int:
-				params = append(params, fmt.Sprintf("%s=%d", k, v))
-			case time.Time:
-				params = append(params, fmt.Sprintf("%s=%s", k, x.String()))
-			case string:
-				params = append(params, fmt.Sprintf("%s=%s", k, printify(x)))
-			default:
-				params = append(params, fmt.Sprintf("%s=%#v", k, v))
-			}
+		// process event
+		_, evt, ok := events.ProcessEvent(e)
+		if !ok {
+			continue
 		}
-		sort.Strings(params)
+
+		// convert event to json
+		eventJ, err := json.Marshal(evt)
+		if err != nil {
+			log.Errorf("Failed to marshall event: %v", err)
+			continue
+		}
+
+		// send event to event collector broker
 		message := &sarama.ProducerMessage{
 			Topic: hc.Topic,
 			Key:   nil,
-			Value: sarama.StringEncoder(strings.Join(params, ", ")),
+			Value: sarama.StringEncoder(eventJ),
 		}
 		select {
 		case hc.producer.Input() <- message:
@@ -123,7 +171,6 @@ func (hc Backend) run() {
 	}
 }
 
-// Send delivers the giving push messages into the internal elastic search endpoint.
 func (hc Backend) Send(message event.Event) {
 	mp := make(map[string]interface{})
 
