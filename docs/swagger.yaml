@@ -1,5 +1,21 @@
 info:
   contact: {}
   license: {}
-paths: {}
+paths:
+  /sessions:
+    get:
+      consumes:
+      - application/json
+      description: get sessions
+      parameters:
+      - description: name search by q
+        format: email
+        in: query
+        name: q
+        type: string
+      produces:
+      - application/json
+      summary: List sessions
+      tags:
+      - sessions
 swagger: "2.0"

@@ -9,6 +9,7 @@ require (
 	github.com/PromonLogicalis/asn1 v0.0.0-20190312173541-d60463189a56 // indirect
 	github.com/Shopify/sarama v1.16.0
 	github.com/Shopify/toxiproxy v2.1.4+incompatible // indirect
+	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/biezhi/gorm-paginator/pagination v0.0.0-20190124091837-7a5c8ed20334
 	github.com/boltdb/bolt v1.3.1
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
@@ -61,7 +62,8 @@ require (
 	github.com/songgao/water v0.0.0-20180221190335-75f112d19d5a
 	github.com/streadway/amqp v0.0.0-20180315184602-8e4aba63da9f
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
-	github.com/swaggo/swag v1.6.7 // indirect
+	github.com/swaggo/gin-swagger v1.2.0
+	github.com/swaggo/swag v1.6.7
 	//github.com/swaggo/gin-swagger v1.2.0
 	//github.com/swaggo/swag v1.6.7 // indirect
 	github.com/urfave/cli/v2 v2.2.0 // indirect

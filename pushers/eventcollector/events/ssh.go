@@ -137,16 +137,17 @@ func DigestRecording(recording string) (digest []models.SessionSSHRecording) {
 
 	command := ""
 	text := ""
-	autoMessageCount := 0
 	commandIndex := 0
 
-	addCommand := func(index int, command string, output string) {
+	addCommand := func(command string, output string) {
+		log.Debugf("--> adding command: command: %s, text: %s \n",  command, text)
 		commandDigest := models.SessionSSHRecording {
-			Index: index,
+			Index: commandIndex,
 			Command: command,
 			Output:  output,
 		}
 		digest = append(digest, commandDigest)
+		commandIndex += 1
 	}
 
 	for x, t := range tokens {
@@ -156,63 +157,81 @@ func DigestRecording(recording string) (digest []models.SessionSSHRecording) {
 		promptMatch := re_prompt.FindStringSubmatch(t) // if matches prompt, switch to input mode
 		if len(promptMatch) != 0 {
 			input = true
+			//log.Debugf("--> prompt found, switching to input mode")
+
+			if len(command) > 0 {
+				addCommand(command, text)
+			} else if len(text) > 0 {
+				addCommand("", text)
+			}
+
+			text = ""
+			command = ""
 			continue
 		}
 
 		index := strings.LastIndex(t, "<br/>")
 		if index == -1 { // "<br/>" not found -> aggregate
-			text += t
+
+			if input {
+				command += t
+			} else {
+				text += t
+			}
+			//log.Debugf("--> <br/> not found, text: %s, command: %s", text, command)
 			continue
 
 		} else { // <br/> found -> aggregate
 
 			if input { // if in input mode -> create command
+
 				command += text + t[0:index] // aggregate until <br/> placeholder
 				command = strings.Replace(command, "<backspace>", "\b", -1)
 				input = false
+				//log.Debugf("--> <br/> found (input mode), switching to output mode, text: %s, command: %s", text, command)
 
 			} else {
 				text = t[0:index]// aggregate until <br/> placeholder and sanitize
 				text = strings.Replace(text, "<br/>", "\n", -1)
 
+				//log.Debugf("--> <br/> found (output mode), adding command, text: %s, command: %s", text, command)
 				if len(command) > 0 {
-					//commands[command] = text
-					addCommand(commandIndex, command, text)
-					commandIndex += 1
+					addCommand(command, text)
+					//log.Debugf("--> <br/> found (output mode, command available), adding command, text: %s, command: %s", text, command)
 					command = ""
 				} else {
-					autoMessageCount += 1
-					addCommand(commandIndex, "", text)
-					//commands[fmt.Sprintf("<Auto message #%d>", autoMessageCount)] = text
-					autoMessageCount += 1
-					commandIndex += 1
-
+					addCommand( "", text)
+					//log.Debugf("--> <br/> found (output mode, command NOT available), adding auto output, text: %s, command: %s", text, command)
 				}
 				text = ""
 			}
 
 		}
 
-
-
+	}
+	if len(command) > 0 {
+		addCommand(command, text)
+	} else if len(text) > 0 {
+		addCommand("", text)
 	}
 
-/*	fmt.Printf("COMMANDS:\n")
 
-	for x, c := range commands {
-		fmt.Printf("Command %s: %s\n", x, c)
-	}
+	/*	fmt.Printf("COMMANDS:\n")
 
-	i := 1
-	for c, o := range commands {
-		commandDigest := models.SessionSSHRecording {
-			Index: i,
-			Command: c,
-			Output:  o,
+		for x, c := range commands {
+			fmt.Printf("Command %s: %s\n", x, c)
 		}
-		i++
-		digest = append(digest, commandDigest)
-	}*/
+
+		i := 1
+		for c, o := range commands {
+			commandDigest := models.SessionSSHRecording {
+				Index: i,
+				Command: c,
+				Output:  o,
+			}
+			i++
+			digest = append(digest, commandDigest)
+		}*/
 
 	return digest
 }

@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
-	"net/http"
 
+	"net/http"
 )
 
 var db = make(map[string]string)
@@ -32,12 +32,42 @@ func setupRouter() *gin.Engine {
 	//CORS -> allow all origins
 	r.Use(cors.Default())
 
+	//setup swagger
+	// @title Swagger Example API
+	// @version 1.0
+	// @description This is the Honeynet server.
+	// @termsOfService http://swagger.io/terms/
 
-	r.GET("/sessions", epSessionsFind)
+	// @contact.name API Support
+	// @contact.url http://www.swagger.io/support
+	// @contact.email support@swagger.io
+
+	// @license.name Apache 2.0
+	// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+	// @host honeynet.ubiwhere.com
+	// @BasePath api/v1
+
+
+
+	v1 := r.Group("api/v1")
+	{
+			sessions := v1.Group("/sessions")
+			{
+				sessions.GET("", listSessions)
+
+			}
+
+	}
+
+	r.GET("/sessions", listSessions)
 	r.GET("/sessions/purge", epSessionsPrune)
 	r.GET("/session/:session-id", epSessions)
 	r.GET("/events", epEventsFind)
 	r.GET("/event/:event-id", epEventGet)
+
+	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	//r.GET("/ssh/sessions", endpointSSHSessions)
 	//r.GET("/ssh/session/:session_id", endpointSSHSessions)
@@ -88,8 +118,15 @@ func setupRouter() *gin.Engine {
 }
 
 
-
-func epSessionsFind(c *gin.Context) {
+// ListSessions godoc
+// @Summary List sessions
+// @Description get sessions
+// @Tags sessions
+// @Accept  json
+// @Produce  json
+// @Param q query string false "name search by q" Format(email)
+// @Router /sessions [get]
+func listSessions(c *gin.Context) {
 	//page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	//limit, _ := strconv.Atoi(c.DefaultQuery("limit", "3"))
 
