@@ -67,7 +67,7 @@ func ProcessEvent(e map[string]interface{}) (session models.Session, event model
 
 	if s, ok := Sessions[sessionID]; ok {
 		session = s
-		session.UpdateDate = fmt.Sprintf("%v", e["date"])
+		session.UpdateDate = ConvertDateUnix(fmt.Sprintf("%v", e["date"]))
 		session.EventCount++
 		log.Debugf("Handling previous registered session '%v'", sessionID)
 
@@ -81,8 +81,8 @@ func ProcessEvent(e map[string]interface{}) (session models.Session, event model
 			SourcePort:      uint(e["source-port"].(int)),
 			DestinationIP:   fmt.Sprintf("%v", e["destination-ip"]),
 			DestinationPort: uint(e["destination-port"].(int)),
-			CreationDate:    fmt.Sprintf("%v", e["date"]),
-			UpdateDate:      fmt.Sprintf("%v", e["date"]),
+			CreationDate:    ConvertDateUnix(fmt.Sprintf("%v", e["date"])),
+			UpdateDate:      ConvertDateUnix(fmt.Sprintf("%v", e["date"])),
 			EventCount:      1,
 		}
 	}
@@ -129,12 +129,22 @@ func ProcessEvent(e map[string]interface{}) (session models.Session, event model
 
 func ConvertDatePseudoISO8601(date string) string {
 	d, err := time.Parse(time.RFC3339, date)
+	d.Unix()
 	if err != nil {
 		log.Errorf("Failed to convert date: %v", err)
 	}
 	fd := fmt.Sprintf("%d-%02d-%02d %02d-%02d-%02d", d.Year(),  d.Month(), d.Day(), d.Hour(), d.Minute(), d.Second())
 	return fd
 }
+
+func ConvertDateUnix(date string) string {
+	d, err := time.Parse(time.RFC3339, date)
+	if err != nil {
+		log.Errorf("Failed to convert date: %v", err)
+	}
+	return fmt.Sprintf("%v", d.Unix())
+}
+
 
 func stringInSlice(a string, list []string) bool {
 	for _, b := range list {
