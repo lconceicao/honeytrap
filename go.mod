@@ -61,6 +61,7 @@ require (
 	github.com/songgao/water v0.0.0-20180221190335-75f112d19d5a
 	github.com/streadway/amqp v0.0.0-20180315184602-8e4aba63da9f
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
+	github.com/swaggo/swag v1.6.7 // indirect
 	//github.com/swaggo/gin-swagger v1.2.0
 	//github.com/swaggo/swag v1.6.7 // indirect
 	github.com/urfave/cli/v2 v2.2.0 // indirect
@@ -69,13 +70,13 @@ require (
 	github.com/yuin/gopher-lua v0.0.0-20190206043414-8bfc7677f583
 	go.mongodb.org/mongo-driver v1.3.4
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
-	golang.org/x/net v0.0.0-20200602114024-627f9648deb9 // indirect
+	golang.org/x/net v0.0.0-20200625001655-4c5254603344 // indirect
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
-	golang.org/x/sys v0.0.0-20200615200032-f1bc736245b1 // indirect
+	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
 	golang.org/x/text v0.3.3 // indirect
 	golang.org/x/time v0.0.0-20170927054726-6dc17368e09b
-	golang.org/x/tools v0.0.0-20200618031402-d15173dcc7e4 // indirect
-	google.golang.org/protobuf v1.24.0 // indirect
+	golang.org/x/tools v0.0.0-20200626171337-aa94e735be7f // indirect
+	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/lxc/go-lxc.v2 v2.0.0-20190324192716-2f350e4a2980
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/olivere/elastic.v5 v5.0.65
