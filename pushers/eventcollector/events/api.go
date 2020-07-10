@@ -18,12 +18,13 @@ func setupRouter() *gin.Engine {
 	// Disable Console Color
 	// gin.DisableConsoleColor()
 	r := gin.Default()
-
+	r.Use(cors.Default())
 
 	authorized := r.Group("/", gin.BasicAuth(gin.Accounts{
 		"admin": "honeynet_admin",
 	}))
 
+	authorized.Use(cors.Default())
 
 	//CORS - specific parameters
 /*	r.Use(cors.New(cors.Config{
@@ -39,7 +40,7 @@ func setupRouter() *gin.Engine {
 	}))*/
 
 	//CORS -> allow all origins
-	r.Use(cors.Default())
+
 
 	//setup swagger
 	// @title Swagger Example API
@@ -76,7 +77,7 @@ func setupRouter() *gin.Engine {
 	authorized.GET("/sessions/purge", epSessionsPrune)
 	authorized.GET("/session/:session-id", epSessions)
 
-	authorized.Use(cors.Default())
+
 
 
 	r.GET("/events", epEventsFind)
