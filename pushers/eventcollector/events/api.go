@@ -24,6 +24,7 @@ func setupRouter() *gin.Engine {
 		"admin": "honeynet_admin",
 	}))
 
+
 	//CORS - specific parameters
 /*	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"https://honeynet.ubiwhere.com"},
@@ -75,6 +76,7 @@ func setupRouter() *gin.Engine {
 	authorized.GET("/sessions/purge", epSessionsPrune)
 	authorized.GET("/session/:session-id", epSessions)
 
+	authorized.Use(cors.Default())
 
 
 	r.GET("/events", epEventsFind)
