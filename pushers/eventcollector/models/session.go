@@ -15,8 +15,8 @@ type Session struct {
 	SourcePort 		uint 			`json:"source-port" form:"source-port" binding:"required" bson:"source-port"`
 	DestinationIP 	string 			`json:"destination-ip" form:"destination-ip" binding:"required" bson:"destination-ip"`
 	DestinationPort uint 			`json:"destination-port" form:"destination-port" binding:"required" bson:"destination-port"`
-	CreationDate 	string 			`json:"creation-date" form:"creation-date" binding:"required" bson:"creation-date"`
-	UpdateDate 		string			`json:"update-date" form:"update-date" binding:"required" bson:"update-date"`
+	CreationDate 	int64			`json:"creation-date" form:"creation-date" binding:"required" bson:"creation-date"`
+	UpdateDate 		int64			`json:"update-date" form:"update-date" binding:"required" bson:"update-date"`
 	EventCount		uint			`json:"event-count" form:"event-count" binding:"required" bson:"event-count"`
 	ServiceMeta 	interface{}		`json:"service-meta" form:"service-meta" binding:"required" bson:"service-meta"`
 }
@@ -31,7 +31,7 @@ type SessionSSH struct {
 }
 
 type SessionSSHAuth struct {
-	Timestamp 		string 		`json:"timestamp" form:"timestamp" binding:"required" bson:"timestamp"`
+	Timestamp 		int64 		`json:"timestamp" form:"timestamp" binding:"required" bson:"timestamp"`
 	AuthType 		string 		`json:"auth-type" form:"auth-type" binding:"required" bson:"auth-type"`
 	Username 		string 		`json:"username" form:"username" binding:"required" bson:"username"`
 	Password 		string 		`json:"password" form:"password" binding:"required" bson:"password"`
@@ -57,7 +57,7 @@ type SessionTelnet struct {
 }
 
 type SessionTelnetAuth struct {
-	Timestamp 		string 		`json:"timestamp" form:"timestamp" binding:"required" bson:"timestamp"`
+	Timestamp 		int64	 	`json:"timestamp" form:"timestamp" binding:"required" bson:"timestamp"`
 	AuthType 		string 		`json:"auth-type" form:"auth-type" binding:"required" bson:"auth-type"`
 	Username 		string 		`json:"username" form:"username" binding:"required" bson:"username"`
 	Password 		string 		`json:"password" form:"password" binding:"required" bson:"password"`
@@ -66,10 +66,13 @@ type SessionTelnetAuth struct {
 
 type SessionTelnetCommand struct {
 	Command 		string		`json:"command" form:"command" binding:"required" bson:"command"`
-	Timestamp 		string 		`json:"timestamp" form:"timestamp" binding:"required" bson:"timestamp"`
+	Timestamp 		int64 		`json:"timestamp" form:"timestamp" binding:"required" bson:"timestamp"`
 }
 
+
+
 type SessionModel struct{}
+
 
 func (s *SessionModel) Create(data Session) error {
 	collection := db.Use("sessions")
@@ -85,13 +88,15 @@ func (s *SessionModel) Update(sessionID string, data Session) error {
 
 func (s *SessionModel) Get(id string) (session Session, err error) {
 	collection := db.Use("sessions")
+
 	err = collection.FindId(bson.ObjectIdHex(id)).One(&session)
 	return session, err
 }
 
-func (s *SessionModel) Find() (list []Session, err error) {
+func (s *SessionModel) Find(query bson.M, limit int, sortFields ...string, ) (list []Session, err error) {
 	collection := db.Use("sessions")
-	err = collection.Find(bson.M{}).All(&list)
+	err = collection.Find(query).All(&list)
+	err = collection.Find(query).Limit(limit).Sort(sortFields...).All(&list)
 	return list, err
 }
 

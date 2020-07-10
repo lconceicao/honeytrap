@@ -102,7 +102,6 @@ func ProcessEventSSH(e map[string]interface{}) (sshSession models.SessionSSH, ev
 		eventMetadataSSH.Recording = sRecording
 
 	}
-	//
 
 	return
 }

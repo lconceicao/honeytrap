@@ -34,7 +34,7 @@ func ProcessEventTelnet(e map[string]interface{}) (telnetSession models.SessionT
 			AuthType: 	   eventType,
 			Username: 	   fmt.Sprintf("%v", e["telnet.username"]),
 			Password: 	   fmt.Sprintf("%v", e["telnet.password"]),
-			Timestamp:	   fmt.Sprintf("%v", e["date"]),
+			Timestamp:	   ConvertDateUnix(fmt.Sprintf("%v", e["date"])),
 		}
 		telnetSession.AuthAttempts = append(telnetSession.AuthAttempts, authAttempt)
 		eventMetadataTelnet.EventType = "auth_attempt_passwd"
@@ -50,7 +50,7 @@ func ProcessEventTelnet(e map[string]interface{}) (telnetSession models.SessionT
 
 		command := models.SessionTelnetCommand{
 			Command:   fmt.Sprintf("%v", e["telnet.command"]),
-			Timestamp: fmt.Sprintf("%v", e["date"]),
+			Timestamp: ConvertDateUnix(fmt.Sprintf("%v", e["date"])),
 		}
 		telnetSession.Commands = append(telnetSession.Commands, command)
 		eventMetadataTelnet.EventType = "session_command"

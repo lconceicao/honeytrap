@@ -129,7 +129,6 @@ func ProcessEvent(e map[string]interface{}) (session models.Session, event model
 
 func ConvertDatePseudoISO8601(date string) string {
 	d, err := time.Parse(time.RFC3339, date)
-	d.Unix()
 	if err != nil {
 		log.Errorf("Failed to convert date: %v", err)
 	}
@@ -137,12 +136,12 @@ func ConvertDatePseudoISO8601(date string) string {
 	return fd
 }
 
-func ConvertDateUnix(date string) string {
+func ConvertDateUnix(date string) int64 {
 	d, err := time.Parse(time.RFC3339, date)
 	if err != nil {
 		log.Errorf("Failed to convert date: %v", err)
 	}
-	return fmt.Sprintf("%v", d.Unix())
+	return d.Unix()
 }
 
 
