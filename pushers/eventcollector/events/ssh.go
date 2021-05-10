@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/joeshaw/iso8601"
 	"github.com/honeytrap/honeytrap/pushers/eventcollector/models"
 	"net/http"
 	"os"
@@ -47,13 +48,16 @@ func ProcessEventSSH(e map[string]interface{}) (sshSession models.SessionSSH, ev
 	switch eventType {
 
 	case "publickey-authentication":
+
+		ts, _ := json.Marshal(time.Now())
+
 		authAttempt := models.SessionSSHAuth{
 			AuthType:      eventType,
 			Username:	   fmt.Sprintf("%v", e["ssh.username"]),
 			Password:      "",
 			PublicKey:     fmt.Sprintf("%v", e["ssh.publickey"]),
 			PublicKeyType: fmt.Sprintf("%v", e["ssh.publickey-type"]),
-			Timestamp:     fmt.Sprintf("%s", time.Now().UTC().Format("2006-01-02T15:04:05-0700")),
+			Timestamp:     fmt.Sprintf("%s", ts),
 		}
 		sshSession.AuthAttempts = append(sshSession.AuthAttempts, authAttempt)
 		eventMetadataSSH.EventType = "auth_attempt_pubkey"
@@ -62,11 +66,14 @@ func ProcessEventSSH(e map[string]interface{}) (sshSession models.SessionSSH, ev
 		eventMetadataSSH.PublicKeyType = authAttempt.PublicKeyType
 
 	case "password-authentication":
+
+		ts, _ := json.Marshal(time.Now())
+
 		authAttempt := models.SessionSSHAuth{
 			AuthType: 	   eventType,
 			Username: 	   fmt.Sprintf("%v", e["ssh.username"]),
 			Password: 	   fmt.Sprintf("%v", e["ssh.password"]),
-			Timestamp:	   fmt.Sprintf("%s", time.Now().UTC().Format("2006-01-02T15:04:05-0700")),
+			Timestamp:	   fmt.Sprintf("%s", ts),
 		}
 		sshSession.AuthAttempts = append(sshSession.AuthAttempts, authAttempt)
 		eventMetadataSSH.EventType = "auth_attempt_passwd"
