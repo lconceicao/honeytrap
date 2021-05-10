@@ -54,7 +54,7 @@ func ProcessEvent(e map[string]interface{}) (session models.Session, event model
 		SourceIP: fmt.Sprintf("%v", e["source-ip"]),
 		Count: 0,
 		Type: "warning",
-		Priority: "medium",
+		Priority: "Medium",
 		Name: service,
 		Context: service,
 	}
