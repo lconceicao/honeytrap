@@ -56,6 +56,8 @@ func New(options ...func(pushers.Channel) error) (pushers.Channel, error) {
 
 	ch := make(chan map[string]interface{}, 100)
 
+
+
 	c := Backend{
 		ch: ch,
 	}
@@ -140,6 +142,8 @@ func printify(s string) string {
 func (hc Backend) run() {
 	defer hc.producer.AsyncClose()
 
+
+	log.Info("processing from agentname: %v", hc.Config.AgentName)
 	for e := range hc.ch {
 
 		// process event

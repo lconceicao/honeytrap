@@ -1,8 +1,11 @@
 package events
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/honeytrap/honeytrap/pushers/eventcollector/models"
+	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
@@ -69,6 +72,23 @@ func ProcessEventSSH(e map[string]interface{}) (sshSession models.SessionSSH, ev
 		eventMetadataSSH.Password = authAttempt.Password
 
 	case "ssh-channel":
+
+		// HERE: invoke HL Policer
+		nsiid := "97732f38-fa7f-4eab-b7d8-f5318baf524d"
+
+		values := map[string]string{"correlationId":"123e4567-e89b-12d3-a456-426655440000", "eventType":"SecurityServiceCompromised", "date":"2021-05-07T15:11:45Z", "serviceInstId": nsiid}
+		json_data, err := json.Marshal(values)
+		if err != nil {
+			log.Fatal(err)
+		}
+		resp, err := http.Post("http://192.168.89.156:9701/hlpolicy/v1/event-notification", "application/json", bytes.NewBuffer(json_data))
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Info("Got reply from HLP: %v", resp)
+		// END: invoke HL Policer
+
+
 		sshSession.AuthSuccess = true
 		sshSession.AuthFailCount = uint(len(sshSession.AuthAttempts) - 1)
 		if len(sshSession.AuthAttempts) < 1 {

@@ -55,7 +55,7 @@ func ProcessEvent(e map[string]interface{}) (session models.Session, event model
 		Count: 0,
 		Type: "Notice",
 		Priority: "Low",
-		Name: "honeynet",
+		Name: service,
 		Context: service,
 	}
 

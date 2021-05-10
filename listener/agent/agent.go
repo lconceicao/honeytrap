@@ -114,6 +114,7 @@ func (al *agentListener) serv(c *conn2) {
 			ShortCommitID: shortCommitID,
 			Token:         token,
 			RemoteAddr:    c.RemoteAddr().String(),
+			NSIID:         nsiid,
 		},
 	})
 
@@ -123,6 +124,7 @@ func (al *agentListener) serv(c *conn2) {
 			ShortCommitID: shortCommitID,
 			Token:         token,
 			RemoteAddr:    c.RemoteAddr().String(),
+			NSIID:         nsiid,
 		},
 	})
 

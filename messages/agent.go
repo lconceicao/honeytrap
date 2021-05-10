@@ -20,6 +20,7 @@ type Agent struct {
 	ShortCommitID string `json:"shortcommit_id"`
 	Token         string `json:"token"`
 	RemoteAddr    string `json:"remote_addr"`
+	NSIID         string `json:"nsiid"`
 
 	LastPing time.Time `json:"last_ping"`
 }
