@@ -3,7 +3,6 @@ package events
 import (
 	"fmt"
 	"github.com/honeytrap/honeytrap/pushers/eventcollector/models"
-	"time"
 )
 
 var	TelnetSessions map[string]models.SessionTelnet
@@ -35,7 +34,7 @@ func ProcessEventTelnet(e map[string]interface{}) (telnetSession models.SessionT
 			AuthType: 	   eventType,
 			Username: 	   fmt.Sprintf("%v", e["telnet.username"]),
 			Password: 	   fmt.Sprintf("%v", e["telnet.password"]),
-			Timestamp:	   fmt.Sprintf("%v", time.Now().Unix()),
+			Timestamp: 	   "2021-05-10T14:08:20Z",
 		}
 		telnetSession.AuthAttempts = append(telnetSession.AuthAttempts, authAttempt)
 		eventMetadataTelnet.EventType = "auth_attempt_passwd"
@@ -51,7 +50,7 @@ func ProcessEventTelnet(e map[string]interface{}) (telnetSession models.SessionT
 
 		command := models.SessionTelnetCommand{
 			Command:   fmt.Sprintf("%v", e["telnet.command"]),
-			Timestamp: fmt.Sprintf("%v", time.Now().Unix()),
+			Timestamp: 	   "2021-05-10T14:08:20Z",
 		}
 		telnetSession.Commands = append(telnetSession.Commands, command)
 		eventMetadataTelnet.EventType = "session_command"
