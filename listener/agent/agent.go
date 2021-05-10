@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"os"
 	"runtime"
 
 	bus "github.com/dutchcoders/gobus"
@@ -106,6 +107,8 @@ func (al *agentListener) serv(c *conn2) {
 	nsiid := h.NSIID
 
 	log.Infof(color.YellowString("Agent connected (version=%s, commitid=%s, token=%s, nsiid=%s)...", version, shortCommitID, token, nsiid))
+	os.Setenv("HONEYNET_NSIID", nsiid)
+
 	defer log.Infof(color.YellowString("Agent disconnected"))
 
 	bus.Emit("agent-connect", &messages.AgentConnect{
