@@ -49,7 +49,6 @@ func ProcessEventSSH(e map[string]interface{}) (sshSession models.SessionSSH, ev
 
 	case "publickey-authentication":
 
-		ts, _ := json.Marshal(time.Now())
 
 		authAttempt := models.SessionSSHAuth{
 			AuthType:      eventType,
@@ -57,7 +56,7 @@ func ProcessEventSSH(e map[string]interface{}) (sshSession models.SessionSSH, ev
 			Password:      "",
 			PublicKey:     fmt.Sprintf("%v", e["ssh.publickey"]),
 			PublicKeyType: fmt.Sprintf("%v", e["ssh.publickey-type"]),
-			Timestamp:     fmt.Sprintf("%s", ts),
+			Timestamp:     fmt.Sprintf("%v", time.Now().UnixNano()),
 		}
 		sshSession.AuthAttempts = append(sshSession.AuthAttempts, authAttempt)
 		eventMetadataSSH.EventType = "auth_attempt_pubkey"
@@ -67,13 +66,11 @@ func ProcessEventSSH(e map[string]interface{}) (sshSession models.SessionSSH, ev
 
 	case "password-authentication":
 
-		ts, _ := json.Marshal(time.Now())
-
 		authAttempt := models.SessionSSHAuth{
 			AuthType: 	   eventType,
 			Username: 	   fmt.Sprintf("%v", e["ssh.username"]),
 			Password: 	   fmt.Sprintf("%v", e["ssh.password"]),
-			Timestamp:	   fmt.Sprintf("%s", ts),
+			Timestamp:	   fmt.Sprintf("%v", time.Now().UnixNano()),
 		}
 		sshSession.AuthAttempts = append(sshSession.AuthAttempts, authAttempt)
 		eventMetadataSSH.EventType = "auth_attempt_passwd"
