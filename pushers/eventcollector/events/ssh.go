@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/joeshaw/iso8601"
 	"github.com/honeytrap/honeytrap/pushers/eventcollector/models"
 	"net/http"
 	"os"
