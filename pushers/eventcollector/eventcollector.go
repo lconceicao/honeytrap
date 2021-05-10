@@ -64,7 +64,6 @@ func New(options ...func(pushers.Channel) error) (pushers.Channel, error) {
 		optionFn(&c)
 	}
 
-
 	config := sarama.NewConfig()
 
 	if c.SecurityProtocol == "SSL" {

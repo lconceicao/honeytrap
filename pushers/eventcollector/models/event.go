@@ -9,10 +9,9 @@ const (
 )
 
 type Event struct {
-	EventID 		bson.ObjectId   `json:"event_id" bson:"_id,omitempty"`
-	//event_id = generate
+	EventID 		int             `json:"event_id" form:"event_id" binding:"required" bson:"event_id"`
 	AgentType 		string  		`json:"agent_type" form:"agent_type" binding:"required" bson:"agent_type"`
-	AgentID			string			`json:"agent_id" form:"agent_id" binding:"required" bson:"agent_id"`
+	AgentID			int		     	`json:"agent_id" form:"agent_id" binding:"required" bson:"agent_id"`
 	Timestamp 		string 			`json:"timestamp" form:"timestamp" binding:"required" bson:"timestamp"`
 	SourceIP 		string 			`json:"sourceip" form:"sourceip" binding:"required" bson:"sourceip"`
 	Count 			uint 			`json:"count" form:"count" binding:"required" bson:"count"`

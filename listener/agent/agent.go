@@ -103,8 +103,9 @@ func (al *agentListener) serv(c *conn2) {
 	version := h.Version
 	shortCommitID := h.ShortCommitID
 	token := h.Token
+	nsiid := h.NSIID
 
-	log.Infof(color.YellowString("Agent connected (version=%s, commitid=%s, token=%s)...", version, shortCommitID, token))
+	log.Infof(color.YellowString("Agent connected (version=%s, commitid=%s, token=%s, nsiid=%s)...", version, shortCommitID, token, nsiid))
 	defer log.Infof(color.YellowString("Agent disconnected"))
 
 	bus.Emit("agent-connect", &messages.AgentConnect{
