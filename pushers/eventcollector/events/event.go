@@ -50,7 +50,7 @@ func ProcessEvent(e map[string]interface{}) (session models.Session, event model
 		EventID: eventIDSeq,
 		AgentID: 1234,
 		AgentType: "HONEYNET",
-		Timestamp: fmt.Sprintf("%v", time.Now().UnixNano()),
+		Timestamp: fmt.Sprintf("%v", time.Now().Unix()),
 		SourceIP: fmt.Sprintf("%v", e["source-ip"]),
 		Count: 0,
 		Type: "Notice",
