@@ -31,7 +31,7 @@ type SessionSSH struct {
 }
 
 type SessionSSHAuth struct {
-	Timestamp 		int64 		`json:"timestamp" form:"timestamp" binding:"required" bson:"timestamp"`
+	Timestamp 		string 		`json:"timestamp" form:"timestamp" binding:"required" bson:"timestamp"`
 	AuthType 		string 		`json:"auth-type" form:"auth-type" binding:"required" bson:"auth-type"`
 	Username 		string 		`json:"username" form:"username" binding:"required" bson:"username"`
 	Password 		string 		`json:"password" form:"password" binding:"required" bson:"password"`
@@ -57,7 +57,7 @@ type SessionTelnet struct {
 }
 
 type SessionTelnetAuth struct {
-	Timestamp 		int64	 	`json:"timestamp" form:"timestamp" binding:"required" bson:"timestamp"`
+	Timestamp 		string	 	`json:"timestamp" form:"timestamp" binding:"required" bson:"timestamp"`
 	AuthType 		string 		`json:"auth-type" form:"auth-type" binding:"required" bson:"auth-type"`
 	Username 		string 		`json:"username" form:"username" binding:"required" bson:"username"`
 	Password 		string 		`json:"password" form:"password" binding:"required" bson:"password"`
@@ -66,7 +66,7 @@ type SessionTelnetAuth struct {
 
 type SessionTelnetCommand struct {
 	Command 		string		`json:"command" form:"command" binding:"required" bson:"command"`
-	Timestamp 		int64 		`json:"timestamp" form:"timestamp" binding:"required" bson:"timestamp"`
+	Timestamp 		string 		`json:"timestamp" form:"timestamp" binding:"required" bson:"timestamp"`
 }
 
 

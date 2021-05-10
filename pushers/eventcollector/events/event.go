@@ -26,7 +26,7 @@ var log = logging.MustGetLogger("channels/eventcollector/event")
 
 var supportedServices = []string{"ssh", "telnet", "dns"}
 
-var eventIDSeq int = 0
+var eventIDSeq int = 1
 
 var Sessions = make(map[string]models.Session)
 var Events = make(map[string]models.Event)
@@ -48,7 +48,8 @@ func ProcessEvent(e map[string]interface{}) (session models.Session, event model
 	eventIDSeq++
 	event = models.Event{
 
-		//EventID: fmt.Sprintf("%v", eventIDSeq),
+		EventID: eventIDSeq,
+		AgentID: 1234,
 		AgentType: "HONEYNET",
 		Timestamp: ConvertDatePseudoISO8601(fmt.Sprintf("%v", e["date"])),
 		SourceIP: fmt.Sprintf("%v", e["source-ip"]),

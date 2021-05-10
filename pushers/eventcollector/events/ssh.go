@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const ansi = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
@@ -52,7 +53,7 @@ func ProcessEventSSH(e map[string]interface{}) (sshSession models.SessionSSH, ev
 			Password:      "",
 			PublicKey:     fmt.Sprintf("%v", e["ssh.publickey"]),
 			PublicKeyType: fmt.Sprintf("%v", e["ssh.publickey-type"]),
-			Timestamp:	   ConvertDateUnix(fmt.Sprintf("%v", e["date"])),
+			Timestamp:     fmt.Sprintf("%s", time.Now().Format(time.RFC3339)),
 		}
 		sshSession.AuthAttempts = append(sshSession.AuthAttempts, authAttempt)
 		eventMetadataSSH.EventType = "auth_attempt_pubkey"
@@ -65,7 +66,7 @@ func ProcessEventSSH(e map[string]interface{}) (sshSession models.SessionSSH, ev
 			AuthType: 	   eventType,
 			Username: 	   fmt.Sprintf("%v", e["ssh.username"]),
 			Password: 	   fmt.Sprintf("%v", e["ssh.password"]),
-			Timestamp:	   ConvertDateUnix(fmt.Sprintf("%v", e["date"])),
+			Timestamp:	   fmt.Sprintf("%s", time.Now().Format(time.RFC3339)),
 		}
 		sshSession.AuthAttempts = append(sshSession.AuthAttempts, authAttempt)
 		eventMetadataSSH.EventType = "auth_attempt_passwd"
@@ -77,9 +78,10 @@ func ProcessEventSSH(e map[string]interface{}) (sshSession models.SessionSSH, ev
 		// HERE: invoke HL Policer
 
 		nsiid := fmt.Sprintf("%s", os.Getenv("HONEYNET_NSIID"))
+		date := fmt.Sprintf("%s", time.Now().Format(time.RFC3339))
 		log.Info("Contacting HLPolicer (NS instance ID: %s", nsiid)
 
-		values := map[string]string{"correlationId":"123e4567-e89b-12d3-a456-426655440000", "eventType":"SecurityServiceCompromised", "date":"2021-05-07T15:11:45Z", "serviceInstId": nsiid}
+		values := map[string]string{"correlationId":"123e4567-e89b-12d3-a456-426655440000", "eventType":"SecurityServiceCompromised", "date":date, "serviceInstId": nsiid}
 		json_data, err := json.Marshal(values)
 		if err != nil {
 			log.Fatal(err)
