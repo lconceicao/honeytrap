@@ -47,7 +47,6 @@ func ProcessEvent(e map[string]interface{}) (session models.Session, event model
 
 	eventIDSeq++
 	event = models.Event{
-
 		EventID: eventIDSeq,
 		AgentID: 1234,
 		AgentType: "HONEYNET",

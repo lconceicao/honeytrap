@@ -53,7 +53,7 @@ func ProcessEventSSH(e map[string]interface{}) (sshSession models.SessionSSH, ev
 			Password:      "",
 			PublicKey:     fmt.Sprintf("%v", e["ssh.publickey"]),
 			PublicKeyType: fmt.Sprintf("%v", e["ssh.publickey-type"]),
-			Timestamp:     fmt.Sprintf("%s", time.Now().Format(time.RFC3339)),
+			Timestamp:     fmt.Sprintf("%s", time.Now().UTC().Format("2006-01-02T15:04:05-0700")),
 		}
 		sshSession.AuthAttempts = append(sshSession.AuthAttempts, authAttempt)
 		eventMetadataSSH.EventType = "auth_attempt_pubkey"
@@ -66,7 +66,7 @@ func ProcessEventSSH(e map[string]interface{}) (sshSession models.SessionSSH, ev
 			AuthType: 	   eventType,
 			Username: 	   fmt.Sprintf("%v", e["ssh.username"]),
 			Password: 	   fmt.Sprintf("%v", e["ssh.password"]),
-			Timestamp:	   fmt.Sprintf("%s", time.Now().Format(time.RFC3339)),
+			Timestamp:	   fmt.Sprintf("%s", time.Now().UTC().Format("2006-01-02T15:04:05-0700")),
 		}
 		sshSession.AuthAttempts = append(sshSession.AuthAttempts, authAttempt)
 		eventMetadataSSH.EventType = "auth_attempt_passwd"
