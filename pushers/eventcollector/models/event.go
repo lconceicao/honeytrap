@@ -51,6 +51,7 @@ type EventMetadataTelnet struct {
 	TransactionType string 		`json:"transaction_type" form:"transaction_type" binding:"required" bson:"transaction_type"`
 	Password 		string 		`json:"password" form:"password" binding:"required" bson:"password"`
 	Recording 		string 		`json:"recording" form:"recording" binding:"required" bson:"recording"`
+	Open            bool        `json:"open" form:"open" binding:"required" bson:"open"`
 }
 
 type EventModel struct{}
