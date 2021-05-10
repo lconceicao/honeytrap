@@ -53,7 +53,7 @@ func ProcessEvent(e map[string]interface{}) (session models.Session, event model
 		Timestamp: 	   "2021-05-10T14:08:20Z",
 		SourceIP: fmt.Sprintf("%v", e["source-ip"]),
 		Count: 0,
-		Type: "warning",
+		Type: "Warning",
 		Priority: "Medium",
 		Name: service,
 		Context: service,
